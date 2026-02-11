@@ -1,0 +1,14 @@
+spring:
+  application:
+    name: france-geo-api
+
+
+  data:
+    mongodb:
+      uri: mongodb://localhost:27018/france_db
+
+  rabbitmq:
+      host: localhost
+      port: 5673
+      username: guest
+      password: guest

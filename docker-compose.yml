@@ -1,0 +1,21 @@
+services:
+  mongodb:
+    image: mongo:latest
+    container_name: france-geo-mongo
+    ports:
+      - "27018:27017"  # windows: container
+    environment:
+      - MONGO_INITDB_DATABASE=france_db
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: france-geo-rabbit
+    ports:
+      - "5673:5672"   # Port de communication AMQP
+      - "15673:15672" # Port de l'interface de gestion (UI)
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+
+volumes:
+  mongo-data:
