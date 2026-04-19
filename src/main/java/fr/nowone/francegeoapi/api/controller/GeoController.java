@@ -8,8 +8,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.geo.Point;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 
@@ -30,7 +30,9 @@ public class GeoController {
         LOGGER.info("[CONTROLLER GEO] Request to find a Zone with longitude {} and latitude {}", String.valueOf(longitude), String.valueOf(latitude));
         Point point = new Point(longitude, latitude);
        ZoneGeographique zone = geoPrimaryPort.findCommuneAtPoint(point);
-       LOGGER.info("[CONTROLLER GEO] Zone find is : {}", zone.getNom());
+       if(zone !=  null){
+           LOGGER.info("[CONTROLLER GEO] Zone find is : {}", zone.getNom());
+       }
         return (zone != null)
                 ? new ResponseEntity<>(zone, HttpStatus.OK)
                 : new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -40,7 +42,12 @@ public class GeoController {
     @GetMapping("/regions")
     public ResponseEntity<List<ZoneGeographique>> getRegions() {
         LOGGER.info("[CONTROLLER GEO] Request to find regions Zones");
-        return ResponseEntity.ok(geoPrimaryPort.findAllRegions());
+        List<ZoneGeographique> regions = geoPrimaryPort.findAllRegions();
+
+        if(ObjectUtils.isEmpty(regions)) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return ResponseEntity.ok(regions);
     }
 
     @GetMapping("/children/{parentCode}")

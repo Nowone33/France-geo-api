@@ -22,7 +22,7 @@ import java.util.List;
 @Component
 public class GeoAdapters implements GeoSecondaryPort {
 
-    private MongoTemplate mongoTemplate;
+    private final MongoTemplate mongoTemplate;
     private final ZoneRepository  zoneRepository;
     private final ZoneGeographiqueMapper mapper;
     private static final Logger LOGGER = LoggerFactory.getLogger(GeoAdapters.class);
@@ -53,7 +53,7 @@ public class GeoAdapters implements GeoSecondaryPort {
     public void updateAllPopulation(){
         updateLevel("COMMUNE", "DEPARTEMENT");
 
-        LOGGER.info("Fin dul calcul Dé&partement. lancement du calcul dans les régions. ");
+        LOGGER.info("Fin du calcul Département. lancement du calcul dans les régions. ");
         updateLevel("DEPARTEMENT", "REGION");
     }
 

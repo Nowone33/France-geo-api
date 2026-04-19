@@ -1,6 +1,5 @@
 package fr.nowone.francegeoapi.infrastructure.job;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import fr.nowone.francegeoapi.api.dto.ImportMessage;
 import fr.nowone.francegeoapi.infrastructure.config.RabbitMQConfig;
 import org.slf4j.Logger;
@@ -19,7 +18,7 @@ public class ImportConsumer {
     }
 
     @RabbitListener(queues = RabbitMQConfig.IMPORT_QUEUE)
-    public void handleImportMessage(ImportMessage message) throws JsonProcessingException {
+    public void handleImportMessage(ImportMessage message){
         LOGGER.info("[!] Début du traitement : {} pour {}", message.getType(), message.getParentCode());
 
         if(message.getParentCode() != null){

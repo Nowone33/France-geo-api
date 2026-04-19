@@ -2,7 +2,6 @@ package fr.nowone.francegeoapi.domain.model;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import fr.nowone.francegeoapi.FranceGeoApiApplication;
 import org.immutables.value.Value;
 
 import javax.annotation.Nullable;

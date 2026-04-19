@@ -1,6 +1,5 @@
 package fr.nowone.francegeoapi.infrastructure.job;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.nowone.francegeoapi.api.dto.GouvFeature;
@@ -38,7 +37,7 @@ public class GeoImportService {
     public void importRegions()  {
         try{
             //1 Appel API
-            LOGGER.info("🌐 Appel à l'API pour les régions...");
+            LOGGER.info("[!] Appel à l'API pour les régions...");
             String rawJson = webClient.get()
                     .uri("https://raw.githubusercontent.com/gregoiredavid/france-geojson/master/regions-version-simplifiee.geojson")
                     .retrieve()
@@ -48,7 +47,7 @@ public class GeoImportService {
             GouvFeatureCollectionResponse response = objectMapper.readValue(rawJson, GouvFeatureCollectionResponse.class);
 
             if(response != null && response.getFeatures() != null) {
-                LOGGER.info("✅ " + response.getFeatures().size() + " régions récupérées.");
+                LOGGER.info("[O] " + response.getFeatures().size() + " régions récupérées.");
 
                 response.getFeatures().forEach(feature -> {
                     ZoneGeographiqueEntity zone =  new ZoneGeographiqueEntity();
@@ -75,7 +74,7 @@ public class GeoImportService {
                 );
             }
         } catch (Exception ex) {
-            LOGGER.severe("❌ Erreur critique lors de l'importation des régions : " + ex.getMessage());
+            LOGGER.severe("[X] Erreur critique lors de l'importation des régions : " + ex.getMessage());
             ex.printStackTrace();
         }
     }
@@ -83,7 +82,7 @@ public class GeoImportService {
     public void importDepartments()  {
         String url = "https://raw.githubusercontent.com/gregoiredavid/france-geojson/master/departements-version-simplifiee.geojson";
         try {
-            LOGGER.info("🌐 Appel à l'API GIT HUB pour les coordonnées départements...");
+            LOGGER.info("[!] Appel à l'API GIT HUB pour les coordonnées départements...");
             String geoJsonRaw = webClient.get()
                     .uri(url)
                     .retrieve()
@@ -93,14 +92,13 @@ public class GeoImportService {
             GouvFeatureCollectionResponse geoSource = objectMapper.readValue(geoJsonRaw, GouvFeatureCollectionResponse.class);
 
             // Création d'un index (Code -> Geométrie)
-
             Map<String, JsonNode> geoMap = geoSource.getFeatures().stream()
                     .collect(Collectors.toMap(
                             dep -> dep.getProperties().get("code").asText(),
                             GouvFeature::getGeometry
                     ));
 
-            //Récupération des départements avec le code région sur l'api gouv
+            //Récupération des départements contenant le code région sur l'api gouv
             String officialRaw = webClient.get()
                     .uri("https://geo.api.gouv.fr/departements")
                     .retrieve()
@@ -138,7 +136,7 @@ public class GeoImportService {
                 );
             }
         } catch (Exception ex){
-            LOGGER.severe("❌ Erreur critique lors du croisement des données des départements: " + ex.getMessage());
+            LOGGER.severe("[X] Erreur critique lors du croisement des données des départements: " + ex.getMessage());
             ex.printStackTrace();
         }
     }
