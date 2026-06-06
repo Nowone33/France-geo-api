@@ -11,6 +11,7 @@ import java.util.Map;
 @JsonSerialize(as = ImmutableZoneGeographique.class)
 @JsonDeserialize(as = ImmutableZoneGeographique.class)
 public interface ZoneGeographique {
+    @Nullable
     String getId();
     String getCode();
     String getNom();

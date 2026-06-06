@@ -1,6 +1,7 @@
 package fr.nowone.francegeoapi.infrastructure.job;
 
 import fr.nowone.francegeoapi.api.dto.ImportMessage;
+import fr.nowone.francegeoapi.domain.service.GeoImportService;
 import fr.nowone.francegeoapi.infrastructure.config.RabbitMQConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

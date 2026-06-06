@@ -10,4 +10,5 @@ public interface GeoSecondaryPort {
     List<ZoneGeographique> findAllRegions(String type);
     List<ZoneGeographique> findChildren(String parentCode, String type);
     void updateAllPopulation();
+    void save(ZoneGeographique zoneGeographique);
 }
