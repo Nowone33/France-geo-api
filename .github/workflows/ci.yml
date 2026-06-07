@@ -1,0 +1,121 @@
+name: Java CI avec Spring Boot
+
+on:
+  push:
+    branches: ["develop", "feature/*"]
+  pull_request:
+    branches: ["main", "develop"]
+
+jobs:
+  # ----------------------------------------------------
+  # JOB 1 : INITIALISATION & COMPILATION
+  # ----------------------------------------------------
+  init:
+    name: Init & Compile
+    runs-on: ubuntu-22.04
+    steps:
+      # checkout@v4.1.7
+      - name: Checkout du code source
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332
+
+      # setup-java@v4.2.1
+      - name: Configuration du JDK 21
+        uses: actions/setup-java@6a0805fcefea3d4657a4744c32157014e3315909
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Compilation et mise en cache des classes
+        run: mvn clean compile
+
+      # On sauvegarde le dossier 'target' généré pour les jobs suivants
+      # upload-artifact@v4.3.3
+      - name: Sauvegarde du build
+        uses: actions/upload-artifact@65462800fd760344d1a7b6871ed3dde732bc09a6
+        with:
+          name: maven-build-target
+          path: target/
+          retention-days: 1
+
+  # ----------------------------------------------------
+  # JOB 2 : LINT & VALIDATION
+  # ----------------------------------------------------
+  lint:
+    name: Lint & Validation
+    runs-on: ubuntu-22.04
+    needs: init
+    steps:
+      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332
+
+      - uses: actions/setup-java@6a0805fcefea3d4657a4744c32157014e3315909
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      # download-artifact@v4.1.7
+      - name: Récupération du build
+        uses: actions/download-artifact@6b208ae046db98c579e8a3aa621ab581ff575935
+        with:
+          name: maven-build-target
+          path: target/
+
+      - name: Validation Maven
+        run: mvn validate
+
+  # ----------------------------------------------------
+  # JOB 3 : TESTS UNITAIRES
+  # ----------------------------------------------------
+  tests:
+    name: Tests Unitaires
+    runs-on: ubuntu-22.04
+    needs: lint
+    steps:
+      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332
+
+      - uses: actions/setup-java@6a0805fcefea3d4657a4744c32157014e3315909
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Récupération du build
+        uses: actions/download-artifact@6b208ae046db98c579e8a3aa621ab581ff575935
+        with:
+          name: maven-build-target
+          path: target/
+
+      - name: Exécution des Tests
+        run: mvn test
+
+      - name: Sauvegarde des rapports de tests
+        uses: actions/upload-artifact@65462800fd760344d1a7b6871ed3dde732bc09a6
+        with:
+          name: test-reports
+          path: target/surefire-reports/
+          retention-days: 1
+
+  # ----------------------------------------------------
+  # JOB 4 : COUVERTURE DE CODE (COVERAGE)
+  # ----------------------------------------------------
+  coverage:
+    name: Vérification Coverage
+    runs-on: ubuntu-22.04
+    needs: tests
+    steps:
+      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332
+
+      - name: Récupération des rapports de tests
+        uses: actions/download-artifact@6b208ae046db98c579e8a3aa621ab581ff575935
+        with:
+          name: maven-build-target
+          path: target/
+
+      - name: Analyse du Coverage
+        uses: madrapps/jacoco-report@v1.7.1
+        with:
+          paths: ${{ github.workspace }}/target/site/jacoco/jacoco.xml
+          token: ${{ secrets.GITHUB_TOKEN }}
+          min-coverage-default: 80
+          min-coverage-changed-files: 80
