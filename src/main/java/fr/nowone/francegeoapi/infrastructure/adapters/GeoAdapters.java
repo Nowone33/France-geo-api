@@ -81,4 +81,18 @@ public class GeoAdapters implements GeoSecondaryPort {
             }
         }
     }
+
+    @Override
+    public void save(ZoneGeographique zone) {
+        // mapping : Model -> Entity
+        ZoneGeographiqueEntity entity = new ZoneGeographiqueEntity();
+        entity.setCode(zone.getCode());
+        entity.setNom(zone.getNom());
+        entity.setType(zone.getType());
+        entity.setParentCode(zone.getParentCode());
+        entity.setGeometrie(zone.getGeometrie());
+        entity.setPopulation(zone.getPopulation());
+
+        zoneRepository.save(entity);
+    }
 }
