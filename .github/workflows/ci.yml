@@ -93,7 +93,7 @@ jobs:
         uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4
         with:
           name: test-reports
-          path: target/surefire-reports/
+          path: target/
           retention-days: 1
 
   # ----------------------------------------------------
@@ -102,6 +102,8 @@ jobs:
   coverage:
     name: Vérification Coverage
     runs-on: ubuntu-22.04
+    permissions:
+      pull-requests: write
     needs: tests
     steps:
       - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955
@@ -109,8 +111,11 @@ jobs:
       - name: Récupération des rapports de tests
         uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
         with:
-          name: maven-build-target
+          name: test-reports
           path: target/
+
+      - name: Lecture du rapport
+        run: mvn jacoco:check
 
       - name: Analyse du Coverage
         uses: madrapps/jacoco-report@v1.7.1
