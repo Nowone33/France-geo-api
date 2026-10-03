@@ -114,9 +114,6 @@ jobs:
           name: test-reports
           path: target/
 
-      - name: Lecture du rapport
-        run: mvn jacoco:check
-
       - name: Analyse du Coverage
         uses: madrapps/jacoco-report@v1.7.1
         with:
