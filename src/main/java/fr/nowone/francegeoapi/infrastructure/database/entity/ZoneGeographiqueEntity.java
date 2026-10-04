@@ -1,11 +1,9 @@
 package fr.nowone.francegeoapi.infrastructure.database.entity;
 
-import fr.nowone.francegeoapi.domain.model.Geometrie;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.util.Map;
 
 
 @Document(collection = "zones")
