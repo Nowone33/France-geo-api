@@ -29,11 +29,11 @@ public class ImportConsumer {
         try{
             switch (message.getType()){
                 case "REGION" -> geoImportService.importRegions();
-                case "DEPARTMENT" -> geoImportService.importDepartments();
+                case "DEPARTEMENT" -> geoImportService.importDepartments();
                 case "COMMUNE" -> geoImportService.importCommunes(message.getParentCode());
                 default -> LOGGER.warn("[?] Type d'import inconnu : {}", message.getType());
             }
-            LOGGER.info("[O] Import réussi pour : {}", message.getType());
+            LOGGER.info("[OK] Import réussi pour : {}", message.getType());
         } catch (Exception e) {
 
             LOGGER.error("[X] ÉCHEC de l'import pour le type {} (Parent: {}). Raison : {}",

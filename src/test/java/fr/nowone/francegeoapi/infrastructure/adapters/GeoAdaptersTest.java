@@ -1,7 +1,7 @@
 package fr.nowone.francegeoapi.infrastructure.adapters;
 
-import fr.nowone.francegeoapi.domain.model.ImmutableZoneGeographique;
-import fr.nowone.francegeoapi.domain.model.ZoneGeographique;
+import fr.nowone.francegeoapi.domain.model.*;
+import fr.nowone.francegeoapi.infrastructure.database.entity.GeometrieEntity;
 import fr.nowone.francegeoapi.infrastructure.database.entity.ZoneGeographiqueEntity;
 import fr.nowone.francegeoapi.infrastructure.database.repository.ZoneRepository;
 import fr.nowone.francegeoapi.infrastructure.mapper.ZoneGeographiqueMapper;
@@ -14,14 +14,12 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.geo.Point;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -53,21 +51,28 @@ class GeoAdaptersTest {
         @Test
         @DisplayName("findCommuneAtPoint - Should return Commune if exist")
         void findCommuneAtPoint_ShouldReturnZone_WhenEntityExists() {
+            Geometrie geo = ImmutableGeometrie.builder()
+                    .type(TypeGeometrie.POINT)
+                    .coordinates(Map.of())
+                    .build();
             // Given
             String type = "COMMUNE";
-            Point point = new Point(2.3522, 48.8566);
+            PointCoordonnee point = ImmutablePointCoordonnee.builder()
+                    .longitude(2.3522)
+                    .latitude(48.8566)
+                    .build();
             ZoneGeographiqueEntity mockEntity = new ZoneGeographiqueEntity();
             ZoneGeographique expectedDomain = ImmutableZoneGeographique.builder()
                     .id("6985ca")
                     .nom("Commune A")
                     .code("001")
                     .type("COMMUNE")
-                    .geometrie(Map.of())
+                    .geometrie(geo)
                     .parentCode("01")
                     .population(0L)
                     .build();
 
-            when(zoneRepository.findAt(type, point.getX(), point.getY())).thenReturn(Optional.of(mockEntity));
+            when(zoneRepository.findAt(type, point.getLongitude(), point.getLatitude())).thenReturn(Optional.of(mockEntity));
             when(mapper.toDomain(mockEntity)).thenReturn(expectedDomain);
 
             // When
@@ -75,13 +80,17 @@ class GeoAdaptersTest {
 
             // Then
             assertThat(result).isNotNull().isEqualTo(expectedDomain);
-            verify(zoneRepository).findAt(type, point.getX(), point.getY());
+            verify(zoneRepository).findAt(type, point.getLongitude(), point.getLatitude());
             verify(mapper).toDomain(mockEntity);
         }
 
         @Test
         @DisplayName("findAllRegions - Should return mapped regions")
         void findAllRegions_ShouldReturnMappedList() {
+            Geometrie geo = ImmutableGeometrie.builder()
+                    .type(TypeGeometrie.POINT)
+                    .coordinates(Map.of())
+                    .build();
             // Given
             String type = "REGION";
             ZoneGeographiqueEntity entity = new ZoneGeographiqueEntity();
@@ -90,7 +99,7 @@ class GeoAdaptersTest {
                     .nom("Region A")
                     .code("001")
                     .type("REGION")
-                    .geometrie(Map.of())
+                    .geometrie(geo)
                     .parentCode("01")
                     .population(0L)
                     .build();
@@ -108,6 +117,10 @@ class GeoAdaptersTest {
         @Test
         @DisplayName("findChildren - Should return childrens of parent")
         void findChildren_ShouldReturnChildrenList() {
+            Geometrie geo = ImmutableGeometrie.builder()
+                    .type(TypeGeometrie.POINT)
+                    .coordinates(Map.of())
+                    .build();
             // Given
             String parentCode = "33";
             String type = "COMMUNE";
@@ -117,7 +130,7 @@ class GeoAdaptersTest {
                     .nom("Commune A")
                     .code("33001")
                     .type("COMMUNE")
-                    .geometrie(Map.of())
+                    .geometrie(geo)
                     .parentCode("33")
                     .population(0L)
                     .build();
@@ -140,6 +153,10 @@ class GeoAdaptersTest {
         @Test
         @DisplayName("save - Should correctly map the domain and call repo")
         void save_ShouldMapAndSaveEntity() {
+            Geometrie geometrie = ImmutableGeometrie.builder()
+                    .type(TypeGeometrie.POINT)
+                    .coordinates(Map.of())
+                    .build();
             // Given
             ZoneGeographique domain = ImmutableZoneGeographique.builder()
                     .id("6985cb")
@@ -147,12 +164,24 @@ class GeoAdaptersTest {
                     .nom("Paris")
                     .type("DEPARTEMENT")
                     .parentCode("11")
+                    .geometrie(geometrie)
                     .population(2100000L)
                     .build();
+            GeometrieEntity geoEntity = new GeometrieEntity(TypeGeometrie.POINT.name(), Map.of());
+            ZoneGeographiqueEntity entity = new ZoneGeographiqueEntity();
+            entity.setId("6985cb");
+            entity.setCode("75");
+            entity.setNom("Paris");
+            entity.setType("DEPARTEMENT");
+            entity.setParentCode("11");
+            entity.setGeometrie(geoEntity);
+            entity.setPopulation(2100000L);
+
 
             ArgumentCaptor<ZoneGeographiqueEntity> entityCaptor = ArgumentCaptor.forClass(ZoneGeographiqueEntity.class);
 
             // When
+            when(mapper.toEntity(domain)).thenReturn(entity);
             geoAdapters.save(domain);
 
             // Then
@@ -164,6 +193,7 @@ class GeoAdaptersTest {
             assertThat(savedEntity.getType()).isEqualTo("DEPARTEMENT");
             assertThat(savedEntity.getParentCode()).isEqualTo("11");
             assertThat(savedEntity.getPopulation()).isEqualTo(2100000L);
+            assertThat(savedEntity).isEqualTo(entity);
         }
 
         @Test

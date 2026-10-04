@@ -18,7 +18,7 @@ public interface ZoneGeographique {
     String getType();
     @Nullable
     String getParentCode();
-    Map<String, Object> getGeometrie();
+    Geometrie getGeometrie();
     @Nullable
     Long getPopulation();
 }

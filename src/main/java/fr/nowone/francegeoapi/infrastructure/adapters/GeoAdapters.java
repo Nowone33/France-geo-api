@@ -1,5 +1,6 @@
 package fr.nowone.francegeoapi.infrastructure.adapters;
 
+import fr.nowone.francegeoapi.domain.model.PointCoordonnee;
 import fr.nowone.francegeoapi.domain.model.ZoneGeographique;
 import fr.nowone.francegeoapi.domain.ports.secondary.GeoSecondaryPort;
 import fr.nowone.francegeoapi.infrastructure.database.entity.ZoneGeographiqueEntity;
@@ -8,7 +9,6 @@ import fr.nowone.francegeoapi.infrastructure.mapper.ZoneGeographiqueMapper;
 import org.bson.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.geo.Point;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
@@ -33,8 +33,11 @@ public class GeoAdapters implements GeoSecondaryPort {
     }
 
     @Override
-    public ZoneGeographique findCommuneAtPoint(String type, Point point) {
-        ZoneGeographiqueEntity entity = zoneRepository.findAt(type, point.getX(), point.getY()).orElse(null);
+    public ZoneGeographique findCommuneAtPoint(String type, PointCoordonnee point) {
+
+        ZoneGeographiqueEntity entity = zoneRepository
+                .findAt(type, point.getLongitude(), point.getLatitude())
+                .orElse(null);
         return mapper.toDomain(entity);
     }
 
@@ -84,15 +87,7 @@ public class GeoAdapters implements GeoSecondaryPort {
 
     @Override
     public void save(ZoneGeographique zone) {
-        // mapping : Model -> Entity
-        ZoneGeographiqueEntity entity = new ZoneGeographiqueEntity();
-        entity.setCode(zone.getCode());
-        entity.setNom(zone.getNom());
-        entity.setType(zone.getType());
-        entity.setParentCode(zone.getParentCode());
-        entity.setGeometrie(zone.getGeometrie());
-        entity.setPopulation(zone.getPopulation());
-
+        ZoneGeographiqueEntity entity = mapper.toEntity(zone);
         zoneRepository.save(entity);
     }
 }

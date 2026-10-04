@@ -1,5 +1,6 @@
 package fr.nowone.francegeoapi.infrastructure.database.entity;
 
+import fr.nowone.francegeoapi.domain.model.Geometrie;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -17,7 +18,7 @@ public class ZoneGeographiqueEntity {
     private String type;
     @Indexed
     private String parentCode;
-    private Map<String, Object> geometrie;
+    private GeometrieEntity geometrie;
     private Long population;
 
 
@@ -64,11 +65,11 @@ public class ZoneGeographiqueEntity {
     }
 
 
-    public Map<String, Object> getGeometrie() {
+    public GeometrieEntity getGeometrie() {
         return geometrie;
     }
 
-    public void setGeometrie(Map<String, Object> geometrie) {
+    public void setGeometrie(GeometrieEntity geometrie) {
         this.geometrie = geometrie;
     }
 

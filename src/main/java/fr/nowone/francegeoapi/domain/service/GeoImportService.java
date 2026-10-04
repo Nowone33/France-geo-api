@@ -6,6 +6,7 @@ import fr.nowone.francegeoapi.api.dto.GouvFeature;
 import fr.nowone.francegeoapi.api.dto.GouvFeatureCollectionResponse;
 import fr.nowone.francegeoapi.api.dto.ImmutableImportMessage;
 import fr.nowone.francegeoapi.api.dto.ImportMessage;
+import fr.nowone.francegeoapi.domain.model.Geometrie;
 import fr.nowone.francegeoapi.domain.model.ImmutableZoneGeographique;
 import fr.nowone.francegeoapi.domain.model.ZoneGeographique;
 import fr.nowone.francegeoapi.domain.ports.secondary.GeoSecondaryPort;
@@ -48,12 +49,12 @@ public class GeoImportService {
             GouvFeatureCollectionResponse response = objectMapper.readValue(rawJson, GouvFeatureCollectionResponse.class);
 
             if(response != null && response.getFeatures() != null) {
-                LOGGER.info("[O] " + response.getFeatures().size() + " régions récupérées.");
+                LOGGER.info("[OK] " + response.getFeatures().size() + " régions récupérées.");
 
                 response.getFeatures().forEach(feature -> {
                     JsonNode props = feature.getProperties();
 
-                    Map<String, Object> geoMap = objectMapper.convertValue(feature.getGeometry(), Map.class);
+                    Geometrie geoMap = objectMapper.convertValue(feature.getGeometry(), Geometrie.class);
                     ZoneGeographique zone = ImmutableZoneGeographique.builder()
                             .nom(props.get("nom").asText())
                             .code(props.get("code").asText())
@@ -117,7 +118,7 @@ public class GeoImportService {
 
 
                 if(geoMap.containsKey(code)){
-                    Map<String, Object> geometry = objectMapper.convertValue(geoMap.get(code), Map.class);
+                    Geometrie geometry = objectMapper.convertValue(geoMap.get(code), Geometrie.class);
                     depts = ImmutableZoneGeographique.builder()
                             .code(code)
                             .nom(node.get("nom").asText())
@@ -169,11 +170,11 @@ public class GeoImportService {
             GouvFeatureCollectionResponse response = objectMapper.readValue(jsonRaw, GouvFeatureCollectionResponse.class);
 
             if(response != null && response.getFeatures() != null){
-                LOGGER.info("[O] " + response.getFeatures().size() + " communes récupérées.");
+                LOGGER.info("[OK] " + response.getFeatures().size() + " communes récupérées.");
                 response.getFeatures().forEach(feature -> {
 
                     JsonNode props = feature.getProperties();
-                    Map<String, Object> geoMap = objectMapper.convertValue(feature.getGeometry(), Map.class);
+                    Geometrie geoMap = objectMapper.convertValue(feature.getGeometry(), Geometrie.class);
 
                      ZoneGeographique commune = ImmutableZoneGeographique.builder()
                              .nom(props.get("nom").asText())

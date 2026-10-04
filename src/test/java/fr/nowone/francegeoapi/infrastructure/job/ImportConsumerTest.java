@@ -44,11 +44,11 @@ class ImportConsumerTest {
         }
 
         @Test
-        @DisplayName("DEPARTMENT - Should call importDepartments")
+        @DisplayName("DEPARTEMENT - Should call importDepartments")
         void handleImportMessage_WithDepartment_ShouldCallImportDepartments() {
             // Given
             ImportMessage message = ImmutableImportMessage.builder()
-                    .type("DEPARTMENT")
+                    .type("DEPARTEMENT")
                     .parentCode(null)
                     .build();
 

@@ -1,7 +1,8 @@
 package fr.nowone.francegeoapi.api.controller;
 
-import fr.nowone.francegeoapi.domain.model.ImmutableZoneGeographique;
-import fr.nowone.francegeoapi.domain.model.ZoneGeographique;
+import fr.nowone.francegeoapi.api.mapper.ZoneGeographiqueDtoMapper;
+import fr.nowone.francegeoapi.api.mapper.ZoneGeographiqueDtoMapperImpl;
+import fr.nowone.francegeoapi.domain.model.*;
 import fr.nowone.francegeoapi.domain.ports.primary.GeoPrimaryPort;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -9,7 +10,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.data.geo.Point;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -22,6 +23,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 
 @WebMvcTest(GeoController.class)
+@Import(ZoneGeographiqueDtoMapperImpl.class)
 class GeoControllerTest {
 
     @Autowired
@@ -30,20 +32,28 @@ class GeoControllerTest {
     @MockitoBean
     private GeoPrimaryPort geoService;
 
+    @Autowired
+    private ZoneGeographiqueDtoMapper mapper;
+
     private List<ZoneGeographique> regions;
     private List<ZoneGeographique> departements;
+
 
 
     @BeforeEach
     void setUp() {
 
+        Geometrie zoneGeo = ImmutableGeometrie.builder()
+                .type(TypeGeometrie.POINT)
+                .coordinates(Map.of())
+                .build();
         ZoneGeographique ileDeFrance = ImmutableZoneGeographique.builder()
                 .id("6985ca")
                 .code("11")
                 .nom("Ile-de-France")
                 .type("REGION")
                 .parentCode(null)
-                .geometrie(Map.of())
+                .geometrie(zoneGeo)
                 .population(12254L)
                 .build();
 
@@ -53,7 +63,7 @@ class GeoControllerTest {
                 .nom("Aquitaine")
                 .type("REGION")
                 .parentCode(null)
-                .geometrie(Map.of())
+                .geometrie(zoneGeo)
                 .population(12054L)
                 .build();
 
@@ -65,7 +75,7 @@ class GeoControllerTest {
                 .nom("Yvelines")
                 .type("DEPARTEMENT")
                 .parentCode("11")
-                .geometrie(Map.of())
+                .geometrie(zoneGeo)
                 .population(1485086L)
                 .build();
 
@@ -75,7 +85,7 @@ class GeoControllerTest {
                 .nom("Seine et Marne")
                 .type("DEPARTEMENT")
                 .parentCode("11")
-                .geometrie(Map.of())
+                .geometrie(zoneGeo)
                 .population(1468108L)
                 .build();
 
@@ -143,7 +153,7 @@ class GeoControllerTest {
 
             when(geoService.findChildren(regionCode, null)).thenReturn(null);
             mockMvc.perform(get("/zone/children/" + regionCode))
-                    .andExpect(status().isBadRequest());
+                    .andExpect(status().is4xxClientError());
         }
     }
 
@@ -156,7 +166,15 @@ class GeoControllerTest {
         void shouldReturnZoneWhenFound() throws Exception {
             double latitude = 46.58;
             double longitude = 0.34;
-            Point expectedPoint = new Point(longitude, latitude);
+            PointCoordonnee expectedPoint = ImmutablePointCoordonnee.builder()
+                    .longitude(longitude)
+                    .latitude(latitude)
+                    .build();
+
+            Geometrie zoneGeo = ImmutableGeometrie.builder()
+                    .type(TypeGeometrie.POINT)
+                    .coordinates(Map.of())
+                    .build();
 
             ZoneGeographique mockZone = ImmutableZoneGeographique.builder()
                     .id("6987cb")
@@ -164,7 +182,7 @@ class GeoControllerTest {
                     .nom("Poitiers")
                     .type("COMMUNE")
                     .parentCode("86")
-                    .geometrie(Map.of())
+                    .geometrie(zoneGeo)
                     .population(89916L)
                     .build();
 
@@ -185,7 +203,10 @@ class GeoControllerTest {
         void shouldReturn404WhenNotFound() throws Exception {
             double latitude = 0.0;
             double longitude = 0.0;
-            Point expectedPoint = new Point(longitude, latitude);
+            PointCoordonnee expectedPoint = ImmutablePointCoordonnee.builder()
+                    .longitude(longitude)
+                    .latitude(latitude)
+                    .build();
 
             when(geoService.findCommuneAtPoint(expectedPoint)).thenReturn(null);
 

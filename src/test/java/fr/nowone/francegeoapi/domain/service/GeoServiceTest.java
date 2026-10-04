@@ -1,7 +1,6 @@
 package fr.nowone.francegeoapi.domain.service;
 
-import fr.nowone.francegeoapi.domain.model.ImmutableZoneGeographique;
-import fr.nowone.francegeoapi.domain.model.ZoneGeographique;
+import fr.nowone.francegeoapi.domain.model.*;
 import fr.nowone.francegeoapi.domain.ports.secondary.GeoSecondaryPort;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -11,7 +10,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.geo.Point;
 import java.util.List;
 import java.util.Map;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -31,6 +29,12 @@ class GeoServiceTest {
 
     @BeforeEach
     void setUp() {
+        Geometrie geometrie = ImmutableGeometrie.builder()
+                .type(TypeGeometrie.POINT)
+                .coordinates(Map.of())
+                .build();
+
+
 
         ZoneGeographique ileDeFrance = ImmutableZoneGeographique.builder()
                 .id("6985ca")
@@ -38,7 +42,7 @@ class GeoServiceTest {
                 .nom("Ile-de-France")
                 .type("REGION")
                 .parentCode(null)
-                .geometrie(Map.of())
+                .geometrie(geometrie)
                 .population(12254L)
                 .build();
 
@@ -48,7 +52,7 @@ class GeoServiceTest {
                 .nom("Aquitaine")
                 .type("REGION")
                 .parentCode(null)
-                .geometrie(Map.of())
+                .geometrie(geometrie)
                 .population(12054L)
                 .build();
 
@@ -60,7 +64,7 @@ class GeoServiceTest {
                 .nom("Yvelines")
                 .type("DEPARTEMENT")
                 .parentCode("11")
-                .geometrie(Map.of())
+                .geometrie(geometrie)
                 .population(1485086L)
                 .build();
 
@@ -70,7 +74,7 @@ class GeoServiceTest {
                 .nom("Seine et Marne")
                 .type("DEPARTEMENT")
                 .parentCode("11")
-                .geometrie(Map.of())
+                .geometrie(geometrie)
                 .population(1468108L)
                 .build();
 
@@ -86,15 +90,22 @@ class GeoServiceTest {
         @Test
         @DisplayName("Should call secondary port with type COMMUNE send back finded zone")
         void shouldReturnCommuneAtPoint() {
+            Geometrie geometrie = ImmutableGeometrie.builder()
+                    .type(TypeGeometrie.POINT)
+                    .coordinates(Map.of())
+                    .build();
             // Given
-            Point point = new Point(2.3522, 48.8566);
+            PointCoordonnee point = ImmutablePointCoordonnee.builder()
+                    .longitude(2.3522)
+                    .latitude(48.8566)
+                    .build();
             ZoneGeographique expectedZone = ImmutableZoneGeographique.builder()
                     .id("6985ca")
                     .nom("Paris")
                     .code("75056")
                     .type("COMMUNE")
                     .parentCode("75")
-                    .geometrie(Map.of())
+                    .geometrie(geometrie)
                     .population(2103778L)
                     .build();
 
