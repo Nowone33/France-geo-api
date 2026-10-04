@@ -1,9 +1,9 @@
 package fr.nowone.francegeoapi.domain.service;
 
+import fr.nowone.francegeoapi.domain.model.PointCoordonnee;
 import fr.nowone.francegeoapi.domain.model.ZoneGeographique;
 import fr.nowone.francegeoapi.domain.ports.primary.GeoPrimaryPort;
 import fr.nowone.francegeoapi.domain.ports.secondary.GeoSecondaryPort;
-import org.springframework.data.geo.Point;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,7 +18,7 @@ public class GeoService implements GeoPrimaryPort {
     }
 
     @Override
-    public ZoneGeographique findCommuneAtPoint(Point point) {
+    public ZoneGeographique findCommuneAtPoint(PointCoordonnee point) {
         String type = "COMMUNE";
         return geoSecondaryPort.findCommuneAtPoint(type, point);
     }

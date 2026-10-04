@@ -1,6 +1,7 @@
 package fr.nowone.francegeoapi.infrastructure.job;
 
 import fr.nowone.francegeoapi.api.dto.ImportMessage;
+import fr.nowone.francegeoapi.domain.service.GeoImportService;
 import fr.nowone.francegeoapi.infrastructure.config.RabbitMQConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,11 +29,11 @@ public class ImportConsumer {
         try{
             switch (message.getType()){
                 case "REGION" -> geoImportService.importRegions();
-                case "DEPARTMENT" -> geoImportService.importDepartments();
+                case "DEPARTEMENT" -> geoImportService.importDepartments();
                 case "COMMUNE" -> geoImportService.importCommunes(message.getParentCode());
                 default -> LOGGER.warn("[?] Type d'import inconnu : {}", message.getType());
             }
-            LOGGER.info("[O] Import réussi pour : {}", message.getType());
+            LOGGER.info("[OK] Import réussi pour : {}", message.getType());
         } catch (Exception e) {
 
             LOGGER.error("[X] ÉCHEC de l'import pour le type {} (Parent: {}). Raison : {}",

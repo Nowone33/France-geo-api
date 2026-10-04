@@ -13,13 +13,15 @@ import org.springframework.web.reactive.function.client.WebClient;
 public class WebClientConfig {
 
     @Bean
-    public WebClient webClient(WebClient.Builder builder) {
-        //Augmentation de la taille mémoire pour les gros GeoJson
+    public WebClient webClient(WebClient.Builder builder, ObjectMapper objectMapper) {
+        //Augmentation de la taille mémoire pour les gros GeoJson [DataBufferLimitException]
+        //de base limite la taille des réponses stockées en mémoire à 256 Ko.
+        // + décodage personnalisé avec Jackson
         ExchangeStrategies strategies = ExchangeStrategies.builder()
                 .codecs(codecs -> {
                             codecs.defaultCodecs().maxInMemorySize(16 * 1024*1024);
                             codecs.defaultCodecs().jackson2JsonDecoder(
-                                    new Jackson2JsonDecoder(new ObjectMapper(), MediaType.TEXT_PLAIN, MediaType.APPLICATION_JSON));
+                                    new Jackson2JsonDecoder(objectMapper, MediaType.TEXT_PLAIN, MediaType.APPLICATION_JSON));
                         })
                 .build();
 
