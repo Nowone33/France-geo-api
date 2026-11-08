@@ -4,6 +4,8 @@ import fr.nowone.francegeoapi.api.mapper.ZoneGeographiqueDtoMapper;
 import fr.nowone.francegeoapi.api.mapper.ZoneGeographiqueDtoMapperImpl;
 import fr.nowone.francegeoapi.domain.model.*;
 import fr.nowone.francegeoapi.domain.ports.primary.GeoPrimaryPort;
+import fr.nowone.francegeoapi.infrastructure.mapper.TypeGeometrieMapper;
+import fr.nowone.francegeoapi.infrastructure.mapper.TypeGeometrieMapperImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -23,7 +25,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 
 @WebMvcTest(GeoController.class)
-@Import(ZoneGeographiqueDtoMapperImpl.class)
+@Import({ZoneGeographiqueDtoMapperImpl.class, TypeGeometrieMapperImpl.class})
 class GeoControllerTest {
 
     @Autowired
@@ -34,6 +36,8 @@ class GeoControllerTest {
 
     @Autowired
     private ZoneGeographiqueDtoMapper mapper;
+
+
 
     private List<ZoneGeographique> regions;
     private List<ZoneGeographique> departements;
