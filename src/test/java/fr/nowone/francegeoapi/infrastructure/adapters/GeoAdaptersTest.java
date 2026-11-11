@@ -1,9 +1,9 @@
 package fr.nowone.francegeoapi.infrastructure.adapters;
 
 import fr.nowone.francegeoapi.domain.model.*;
-import fr.nowone.francegeoapi.infrastructure.database.entity.GeometrieEntity;
-import fr.nowone.francegeoapi.infrastructure.database.entity.ZoneGeographiqueEntity;
-import fr.nowone.francegeoapi.infrastructure.database.repository.ZoneRepository;
+import fr.nowone.francegeoapi.infrastructure.database.mongo.entity.GeometrieEntity;
+import fr.nowone.francegeoapi.infrastructure.database.mongo.entity.ZoneGeographiqueEntity;
+import fr.nowone.francegeoapi.infrastructure.database.mongo.repository.ZoneRepository;
 import fr.nowone.francegeoapi.infrastructure.mapper.ZoneGeographiqueMapper;
 import org.bson.Document;
 import org.junit.jupiter.api.DisplayName;

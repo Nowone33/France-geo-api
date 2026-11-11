@@ -2,8 +2,8 @@ package fr.nowone.francegeoapi.infrastructure.mapper;
 
 import fr.nowone.francegeoapi.domain.model.Geometrie;
 import fr.nowone.francegeoapi.domain.model.ZoneGeographique;
-import fr.nowone.francegeoapi.infrastructure.database.entity.GeometrieEntity;
-import fr.nowone.francegeoapi.infrastructure.database.entity.ZoneGeographiqueEntity;
+import fr.nowone.francegeoapi.infrastructure.database.mongo.entity.GeometrieEntity;
+import fr.nowone.francegeoapi.infrastructure.database.mongo.entity.ZoneGeographiqueEntity;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring", uses = { TypeGeometrieMapper.class})

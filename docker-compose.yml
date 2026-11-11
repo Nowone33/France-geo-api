@@ -1,4 +1,15 @@
 services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: france-geo-postgres
+    ports:
+      - "5434:5434"
+    environment:
+      - POSTGRES_DB=france_geo_sql
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+        - postgres_data:/var/lib/postgresql/data
   mongodb:
     image: mongo:latest
     container_name: france-geo-mongo
@@ -17,5 +28,12 @@ services:
       - RABBITMQ_DEFAULT_USER=guest
       - RABBITMQ_DEFAULT_PASS=guest
 
+  redis:
+    image: redis:7-alpine
+    container_name: france-geo-redis
+    ports:
+      - "6379:6379"
+
 volumes:
   mongo-data:
+  postgres_data:

@@ -1,4 +1,4 @@
-package fr.nowone.francegeoapi.infrastructure.database.entity;
+package fr.nowone.francegeoapi.infrastructure.database.mongo.entity;
 
 public class GeometrieEntity {
     private String type;
